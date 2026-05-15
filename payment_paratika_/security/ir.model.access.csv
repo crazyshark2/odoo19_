@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_paratika_category_installment,paratika.category.installment,model_paratika_category_installment,base.group_system,1,1,1,1
-access_paratika_payment_bank,paratika.payment.bank,model_paratika_payment_bank,base.group_system,1,1,1,1
-access_paratika_category_installment_user,paratika.category.installment.user,model_paratika_category_installment,base.group_user,1,0,0,0
-access_paratika_payment_bank_user,paratika.payment.bank.user,model_paratika_payment_bank,base.group_user,1,0,0,0
