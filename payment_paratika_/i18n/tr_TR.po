@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: Reset Bilişim\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: payment_paratika
+#: model:ir.model.fields.selection,name:payment_paratika.selection__payment_provider__paratika_category_restriction__allow
+msgid "Sadece Belirli Kategoriler"
+msgstr "Sadece Belirli Kategoriler"
+
+#. module: payment_paratika
+#: model:ir.model.fields,field_description:payment_paratika.field_payment_provider__paratika_enable_category_installments
+msgid "Kategori Bazlı Taksit"
+msgstr "Kategori Bazlı Taksit"

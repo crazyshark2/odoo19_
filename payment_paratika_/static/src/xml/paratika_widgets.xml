@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    
+    <!-- =================================================================== -->
+    <!-- BANK SELECTOR WIDGET -->
+    <!-- =================================================================== -->
+    <t t-name="payment_paratika.BankSelector" owl="1">
+        <div class="bank-selector-container">
+            <!-- Search Box -->
+            <t t-if="props.showSearch">
+                <div class="bank-search-box">
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           t-ref="searchInput"
+                           placeholder="Banka ara..." 
+                           t-on-input="onSearchInput"/>
+                </div>
+            </t>
+            
+            <!-- Filter Tags -->
+            <t t-if="props.showFilters and props.filters">
+                <div class="bank-filter-tags">
+                    <t t-foreach="props.filters" t-as="filter" t-key="filter.id">
+                        <span class="bank-filter-tag" 
+                              t-att-class="{active: selectedFilter === filter.id}"
+                              t-on-click="() => this.onFilterClick(filter.id)"
+                              t-esc="filter.name"/>
+                    </t>
+                </div>
+            </t>
+            
+            <!-- Banks Grid -->
+            <div class="bank-selector" 
+                 t-att-class="{loading: state.loading, empty: !state.filteredBanks.length}"
+                 t-ref="bankSelector">
+                
+                <!-- Loading State -->
+                <t t-if="state.loading">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status"/>
+                        <p class="mt-2 text-muted small">Bankalar yükleniyor...</p>
+                    </div>
+                </t>
+                
+                <!-- Empty State -->
+                <t t-elif="!state.filteredBanks.length">
+                    <div class="empty">
+                        <i class="fa fa-bank fa-2x mb-2 text-muted"/>
+                        <p class="mb-0">Gösterilecek banka bulunamadı</p>
+                        <small class="text-muted" t-if="searchQuery">
+                            "<t t-esc="searchQuery"/>" aramanızla eşleşen sonuç yok
+                        </small>
+                    </div>
+                </t>
+                
+                <!-- Bank Options -->
+                <t t-else="">
+                    <t t-foreach="state.filteredBanks" t-as="bank" t-key="bank.id">
+                        <div class="bank-option"
+                             t-att-class="{
+                                 active: selectedBank === bank.code,
+                                 'text-muted': !bank.available
+                             }"
+                             t-att-data-bank="bank.code"
+                             t-att-data-category-restricted="bank.categoryRestricted ? 'true' : 'false'"
+                             t-att-data-recommended="bank.recommended ? 'true' : 'false'"
+                             t-on-click="() => this.onBankSelect(bank)"
+                             t-on-keydown="(ev) => this.onKeyDown(ev, bank)"
+                             role="radio"
+                             t-att-aria-checked="selectedBank === bank.code"
+                             tabindex="0">
+                            
+                            <!-- Badges -->
+                            <t t-if="bank.badges">
+                                <t t-foreach="bank.badges" t-as="badge" t-key="badge">
+                                    <span class="bank-badge" 
+                                          t-att-class="badge.type"
+                                          t-esc="badge.label"/>
+                                </t>
+                            </t>
+                            
+                            <!-- Logo -->
+                            <div class="bank-logo">
+                                <img t-if="bank.logo" 
+                                     t-att-src="bank.logo" 
+                                     t-att-alt="bank.name"
+                                     loading="lazy"/>
+                                <i t-elif="bank.icon" 
+                                   t-att-class="bank.icon + ' fa-2x text-primary'"/>
+                                <span t-else="" class="text-muted small" t-esc="bank.code"/>
+                            </div>
+                            
+                            <!-- Name -->
+                            <span class="bank-name" t-esc="bank.name"/>
+                            
+                            <!-- Installment Info Tooltip -->
+                            <t t-if="bank.installments and bank.installments.length">
+                                <div class="installment-info">
+                                    <strong>Taksit:</strong> 
+                                    <t t-esc="bank.installments.join(', ')"/>
+                                    <t t-if="bank.commission">
+                                        <br/>
+                                        <small>Komisyon: %<t t-esc="bank.commission"/></small>
+                                    </t>
+                                </div>
+                            </t>
+                            
+                            <!-- Screen Reader Text -->
+                            <span class="sr-only">
+                                <t t-esc="bank.name"/>
+                                <t t-if="!bank.available">, kullanılamıyor</t>
+                                <t t-if="selectedBank === bank.code">, seçili</t>
+                            </span>
+                        </div>
+                    </t>
+                </t>
+            </div>
+            
+            <!-- Hidden Input for Form Submission -->
+            <input type="hidden" 
+                   t-att-name="props.inputName || 'paymentSystem'" 
+                   t-att-value="selectedBank"
+                   t-ref="hiddenInput"
+                   required="required"/>
+            
+            <!-- Category Restriction Notice -->
+            <t t-if="props.categoryRestrictionNotice">
+                <div class="alert alert-info alert-sm mt-2 py-2">
+                    <i class="fa fa-info-circle me-1"></i>
+                    <small t-esc="props.categoryRestrictionNotice"/>
+                </div>
+            </t>
+        </div>
+    </t>
+    
+    <!-- =================================================================== -->
+    <!-- INSTALLMENT CALCULATOR WIDGET -->
+    <!-- =================================================================== -->
+    <t t-name="payment_paratika.InstallmentCalculator" owl="1">
+        <div class="installment-calculator">
+            <!-- Amount Display -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <span class="text-muted">Toplam Tutar</span>
+                <strong class="h5 mb-0" t-esc="formattedAmount"/>
+            </div>
+            
+            <!-- Installment Selector -->
+            <div class="mb-3">
+                <label class="form-label small text-muted">Taksit Sayısı</label>
+                <div class="btn-group w-100" role="group">
+                    <t t-foreach="props.installmentOptions" t-as="opt" t-key="opt">
+                        <input type="radio" 
+                               class="btn-check" 
+                               t-att-name="props.inputName || 'installmentCount'"
+                               t-att-value="opt"
+                               t-att-id="'installment_' + opt"
+                               t-on-change="() => this.onInstallmentChange(opt)"
+                               t-att-checked="state.selectedInstallment === opt"/>
+                        <label class="btn btn-outline-primary" 
+                               t-att-for="'installment_' + opt"
+                               t-att-class="{active: state.selectedInstallment === opt}">
+                            <t t-if="opt == '1'">Peşin</t>
+                            <t t-else=""><t t-esc="opt"/> Taksit</t>
+                        </label>
+                    </t>
+                </div>
+            </div>
+            
+            <!-- Calculation Results -->
+            <t t-if="state.calculation">
+                <div class="calculation-results bg-light rounded p-3">
+                    <div class="row g-2 small">
+                        <div class="col-6">
+                            <span class="text-muted">Taksit Başına:</span>
+                        </div>
+                        <div class="col-6 text-end">
+                            <strong t-esc="state.calculation.perInstallment"/>
+                        </div>
+                        
+                        <t t-if="state.calculation.commission > 0">
+                            <div class="col-6">
+                                <span class="text-muted">Komisyon:</span>
+                            </div>
+                            <div class="col-6 text-end text-danger">
+                                +<t t-esc="state.calculation.commission"/>
+                            </div>
+                        </t>
+                        
+                        <t t-if="state.calculation.interest > 0">
+                            <div class="col-6">
+                                <span class="text-muted">Faiz:</span>
+                            </div>
+                            <div class="col-6 text-end text-danger">
+                                +<t t-esc="state.calculation.interest"/>
+                            </div>
+                        </t>
+                        
+                        <div class="col-12 border-top pt-2 mt-1">
+                            <div class="d-flex justify-content-between">
+                                <strong>Toplam Ödenecek:</strong>
+                                <strong class="text-primary" t-esc="state.calculation.total"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            
+            <!-- Loading State -->
+            <t t-if="state.calculating">
+                <div class="text-center py-2">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"/>
+                    <span class="ms-2 small text-muted">Hesaplanıyor...</span>
+                </div>
+            </t>
+            
+            <!-- Category Notice -->
+            <t t-if="props.categoryNotice">
+                <div class="alert alert-warning alert-sm mt-2 py-2">
+                    <i class="fa fa-exclamation-triangle me-1"></i>
+                    <small t-esc="props.categoryNotice"/>
+                </div>
+            </t>
+        </div>
+    </t>
+    
+    <!-- =================================================================== -->
+    <!-- PAYMENT STATUS BADGE -->
+    <!-- =================================================================== -->
+    <t t-name="payment_paratika.PaymentStatusBadge" owl="1">
+        <span class="badge" 
+              t-att-class="{
+                  'bg-success': props.status === 'done',
+                  'bg-warning text-dark': props.status === 'pending',
+                  'bg-danger': props.status === 'error',
+                  'bg-secondary': props.status === 'draft',
+                  'bg-info': props.status === 'authorized'
+              }">
+            <t t-if="props.status === 'done'">
+                <i class="fa fa-check me-1"/>Başarılı
+            </t>
+            <t t-elif="props.status === 'pending'">
+                <i class="fa fa-clock me-1"/>Beklemede
+            </t>
+            <t t-elif="props.status === 'error'">
+                <i class="fa fa-times me-1"/>Hata
+            </t>
+            <t t-elif="props.status === 'authorized'">
+                <i class="fa fa-lock me-1"/>Otorize
+            </t>
+            <t t-else="">
+                <i class="fa fa-hourglass-start me-1"/>Taslak
+            </t>
+        </span>
+    </t>
+    
+    <!-- =================================================================== -->
+    <!-- CARD TOKEN DISPLAY -->
+    <!-- =================================================================== -->
+    <t t-name="payment_paratika.CardTokenDisplay" owl="1">
+        <div class="card-token-item border rounded p-2 d-flex align-items-center">
+            <!-- Card Icon -->
+            <div class="me-3 text-primary">
+                <i t-att-class="'fa fa-credit-card fa-lg ' + (
+                    props.cardBrand === 'visa' ? 'text-primary' :
+                    props.cardBrand === 'mastercard' ? 'text-danger' :
+                    props.cardBrand === 'amex' ? 'text-info' :
+                    'text-secondary'
+                )"/>
+            </div>
+            
+            <!-- Card Details -->
+            <div class="flex-grow-1">
+                <div class="fw-medium" t-esc="props.cardNumber || '**** **** **** ' + props.last4"/>
+                <div class="small text-muted">
+                    <t t-esc="props.cardBrand || 'Kredi Kartı'"/>
+                    • Son Kullanma: <t t-esc="props.expiryDate"/>
+                </div>
+            </div>
+            
+            <!-- Default Badge -->
+            <t t-if="props.isDefault">
+                <span class="badge bg-success ms-2">Varsayılan</span>
+            </t>
+            
+            <!-- Actions -->
+            <div class="ms-2" t-if="props.showActions">
+                <button class="btn btn-sm btn-outline-secondary" 
+                        t-on-click="props.onMakeDefault"
+                        t-if="!props.isDefault">
+                    Varsayılan Yap
+                </button>
+                <button class="btn btn-sm btn-outline-danger" 
+                        t-on-click="props.onDelete"
+                        title="Kartı Sil">
+                    <i class="fa fa-trash"/>
+                </button>
+            </div>
+        </div>
+    </t>
+    
+</templates>

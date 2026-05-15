@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Customer portal: payment method display -->
+    <template id="portal_my_details_payment" inherit_id="portal.portal_my_details">
+        <xpath expr="//div[@id='o_portal_details_info']" position="after">
+            <t t-if="partner.payment_token_ids.filtered(lambda t: t.provider_id.code == 'paratika')">
+                <h4>Kaydedilmiş Kartlar</h4>
+                <div class="row">
+                    <t t-foreach="partner.payment_token_ids.filtered(lambda t: t.provider_id.code == 'paratika')" t-as="token">
+                        <div class="col-md-6 mb-2">
+                            <div class="card">
+                                <div class="card-body py-2">
+                                    <i class="fa fa-credit-card me-2"></i>
+                                    <strong t-esc="token.name"/>
+                                    <span class="text-muted small ms-2" t-esc="token.expiry_date"/>
+                                    <span t-if="token == partner.payment_token_id" class="badge bg-success ms-2">Varsayılan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

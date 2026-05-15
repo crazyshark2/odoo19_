@@ -1,0 +1,137 @@
+/**
+ * Paratika Payment Styles for Odoo 19
+ */
+
+/* Payment Container */
+.paratika-payment-container {
+    padding: 1rem;
+}
+
+/* Installment Selector */
+#paratika_installment {
+    font-weight: 500;
+}
+
+#paratika_installment option[value="1"] {
+    font-weight: 600;
+    color: #198754;
+}
+
+/* Bank Selector */
+.bank-selector {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bank-option {
+    transition: all 0.2s ease;
+    background: #fff;
+    min-width: 70px;
+}
+
+.bank-option:hover {
+    border-color: #0d6efd !important;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.bank-option.active {
+    border-color: #0d6efd !important;
+    background-color: #e7f1ff;
+}
+
+.bank-option img {
+    max-height: 35px;
+    object-fit: contain;
+    filter: grayscale(20%);
+    transition: filter 0.2s;
+}
+
+.bank-option.active img,
+.bank-option:hover img {
+    filter: grayscale(0%);
+}
+
+/* Card Form */
+.card-form {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.card-form .form-control {
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
+
+.card-form input[name="pan"] {
+    font-size: 1.1rem;
+}
+
+/* Installment Display */
+.installment-display {
+    border-left: 4px solid #0d6efd;
+    background: #e7f1ff;
+}
+
+.installment-breakdown {
+    line-height: 1.5;
+}
+
+/* Loading State */
+.o_loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.o_loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px;
+    border: 3px solid #0d6efd;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+    .bank-selector {
+        justify-content: center;
+    }
+    
+    .bank-option {
+        min-width: 60px;
+        padding: 0.5rem !important;
+    }
+    
+    .bank-option img {
+        max-height: 30px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .bank-option {
+        background: #2b2b2b;
+        border-color: #444;
+    }
+    
+    .card-form {
+        background: #252525;
+        border-color: #444;
+    }
+    
+    .installment-display {
+        background: #1e3a5f;
+        border-left-color: #6ea8fe;
+    }
+}

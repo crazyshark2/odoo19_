@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend product category form -->
+    <record id="product_category_form_view_paratika" model="ir.ui.view">
+        <field name="name">product.category.form.paratika</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Paratika Ödeme" name="paratika_settings">
+                    
+                    <group string="Ödeme Sağlayıcı Eşleştirme">
+                        <field name="paratika_payment_provider_ids" 
+                               widget="many2many_tags"
+                               placeholder="Bu kategori için ödeme sağlayıcıları..."/>
+                    </group>
+                    
+                    <group string="Taksit Ayarları">
+                        <field name="paratika_default_installment"/>
+                        <field name="paratika_max_installment"/>
+                    </group>
+                    
+                    <group string="Banka Öncelikleri">
+                        <field name="paratika_bank_priority" 
+                               widget="many2many_checkboxes"
+                               options="{'no_create': True}"/>
+                    </group>
+                    
+                    <group string="Komisyon Ayarları">
+                        <field name="paratika_commission_override" 
+                               help="Bu kategori için özel komisyon oranı (%). Boş bırakılırsa genel oran kullanılır."/>
+                    </group>
+                    
+                    <div class="alert alert-info mt-3" role="alert">
+                        <strong>💡 İpucu:</strong> Bu ayarlar sadece Paratika ödeme sağlayıcısı için geçerlidir. 
+                        Kategori bazlı kurallar, sepet içeriğine göre uygun ödeme yöntemlerini ve taksit 
+                        seçeneklerini dinamik olarak filtreler.
+                    </div>
+                </page>
+            </notebook>
+        </field>
+    </record>
+    
+    <!-- Category tree view extension -->
+    <record id="product_category_tree_view_paratika" model="ir.ui.view">
+        <field name="name">product.category.tree.paratika</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="paratika_default_installment" optional="show"/>
+                <field name="paratika_max_installment" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

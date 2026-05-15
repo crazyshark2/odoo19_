@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Record Rules for category installment config -->
+    <record id="rule_paratika_category_installment_user" model="ir.rule">
+        <field name="name">Category Installment: User Read Only</field>
+        <field name="model_id" ref="model_paratika_category_installment"/>
+        <field name="domain_force">[('provider_id.active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+    
+    <record id="rule_paratika_category_installment_system" model="ir.rule">
+        <field name="name">Category Installment: System Full Access</field>
+        <field name="model_id" ref="model_paratika_category_installment"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+    
+    <!-- Bank configuration rules -->
+    <record id="rule_paratika_bank_user" model="ir.rule">
+        <field name="name">Payment Bank: User Read Only Active</field>
+        <field name="model_id" ref="model_paratika_payment_bank"/>
+        <field name="domain_force">[('active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+</odoo>
